@@ -50,13 +50,17 @@ class FlicksHomeViewController: UIViewController, UITableViewDelegate, UITableVi
     
 
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        /*total cell count*/
         return movies.count
     }
     
+    /* function called for every cell*/
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        //current index cell data
         let movie = movies[indexPath.row] as NSDictionary
-        
+        //get current cell
         let movieCell = tableView.dequeueReusableCellWithIdentifier("MovieCell", forIndexPath: indexPath) as! MovieCell
+        //set current cell
         movieCell.movieTitle.text = movie["title"] as? String
         movieCell.movieDescription.text = movie["overview"] as? String
         let baseUrl = "http://image.tmdb.org/t/p"
@@ -66,14 +70,17 @@ class FlicksHomeViewController: UIViewController, UITableViewDelegate, UITableVi
         movieCell.movieImageView.setImageWithURL(NSURL(string: fileUrlWithPath)!)
         return movieCell
     }
-    /*
-    // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
+        let sourceCell = sender as! MovieCell
+        let destinationViewController = segue.destinationViewController as! FlicksDetailsViewController
+        
+        let indexPath = flicksHomeTableView.indexPathForCell(sourceCell)
+        destinationViewController.movie = movies[indexPath!.row]
+        
     }
-    */
 
 }
