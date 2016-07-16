@@ -9,14 +9,30 @@
 import UIKit
 import AFNetworking
 import MBProgressHUD
+import ReachabilitySwift
 
 class FlicksHomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
+    @IBOutlet weak var networkErrorView: UIView!
+    @IBOutlet weak var errorMessageLabel: UILabel!
     @IBOutlet weak var flicksHomeTableView: UITableView!
     var movies = [NSDictionary]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        /*reachibility code starts*/
+        do {
+            let reachability = try Reachability.reachabilityForInternetConnection()
+            let isReachable  = reachability.isReachable();
+            errorMessageLabel.hidden = true
+            if isReachable == false {
+                errorMessageLabel.hidden = false
+                errorMessageLabel.text = "Network Error"
+            }
+        } catch {
+            print(error)
+        }
+        /*reachibility code ends*/
         
         flicksHomeTableView.delegate = self
         flicksHomeTableView.dataSource = self

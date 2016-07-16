@@ -8,6 +8,7 @@ target 'Flicks' do
   # Pods for Flicks
     pod 'AFNetworking', '~> 2.6'
     pod 'MBProgressHUD', '~> 0.9.2'
+    pod 'ReachabilitySwift'
   target 'FlicksTests' do
     inherit! :search_paths
     # Pods for testing
