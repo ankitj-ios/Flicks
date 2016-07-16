@@ -8,6 +8,7 @@
 
 import UIKit
 import AFNetworking
+import MBProgressHUD
 
 class FlicksHomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
@@ -24,10 +25,13 @@ class FlicksHomeViewController: UIViewController, UITableViewDelegate, UITableVi
         let url = NSURL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")
         let request = NSURLRequest(URL: url!)
         
+        MBProgressHUD.showHUDAddedTo(self.view, animated: true)
+        
         let session = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration(),
                                    delegate: nil, delegateQueue: NSOperationQueue.mainQueue())
         let task : NSURLSessionDataTask = session.dataTaskWithRequest(request,
           completionHandler: { (dataOrNil, response, error) in
+            MBProgressHUD.hideHUDForView(self.view, animated: true)
             if let data = dataOrNil {
                 if let responseDictionary = try! NSJSONSerialization.JSONObjectWithData(data,
                     options:[]) as? NSDictionary {
