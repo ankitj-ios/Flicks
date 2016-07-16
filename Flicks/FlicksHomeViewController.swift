@@ -38,11 +38,6 @@ class FlicksHomeViewController: UIViewController, UITableViewDelegate, UITableVi
         flicksHomeTableView.delegate = self
         flicksHomeTableView.dataSource = self
         
-        /* pull to refresh */
-        let refreshControl =  UIRefreshControl()
-        refreshControl.addTarget(<#T##target: AnyObject?##AnyObject?#>, action: <#T##Selector#>, forControlEvents: <#T##UIControlEvents#>)
-        
-        
         /* calling api to fetch data */
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
         let url = NSURL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")
