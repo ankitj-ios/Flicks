@@ -11,14 +11,18 @@ import AFNetworking
 import MBProgressHUD
 import ReachabilitySwift
 
-class FlicksHomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class FlicksHomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
 
     @IBOutlet weak var networkErrorView: UIView!
     @IBOutlet weak var errorMessageLabel: UILabel!
     @IBOutlet weak var flicksHomeTableView: UITableView!
     var movies = [NSDictionary]()
+    var filteredMovies = [NSDictionary]()
     let refreshControl =  UIRefreshControl()
     var endPointSuffix : String = "now_playing"
+    
+    @IBOutlet weak var searchBar: UISearchBar!
+    var isSearchActive : Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,6 +33,10 @@ class FlicksHomeViewController: UIViewController, UITableViewDelegate, UITableVi
         /* setting delegate and datasource for tableview */
         flicksHomeTableView.delegate = self
         flicksHomeTableView.dataSource = self
+        
+        /* for search */
+        searchBar.delegate = self
+        searchBar.placeholder = "Movie Title"
         
         /* pull to refresh */
         refreshControl.addTarget(self, action: #selector(onPullToRefresh(_:)), forControlEvents: UIControlEvents.ValueChanged)
@@ -94,18 +102,61 @@ class FlicksHomeViewController: UIViewController, UITableViewDelegate, UITableVi
         refreshControl.endRefreshing()
     }
     
+    // =============================    Search Bar Methods    =========================================
     
+    func searchBarTextDidBeginEditing(searchBar: UISearchBar) {
+        isSearchActive = true;
+        searchBar.showsCancelButton = true
+    }
+    
+    func searchBarTextDidEndEditing(searchBar: UISearchBar) {
+        isSearchActive = false;
+    }
+    
+    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
+        isSearchActive = false;
+        searchBar.showsCancelButton = false
+        searchBar.text = ""
+        searchBar.resignFirstResponder()
+        postDataFetch()
+    }
+
+    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+        isSearchActive = false;
+    }
+    
+    
+    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+        filteredMovies = movies.filter ({ (movie) -> Bool in
+            let movieTitle = movie["title"] as! String
+            if movieTitle.rangeOfString(searchText, options: .CaseInsensitiveSearch) != nil {
+                return true
+            } else {
+                return false
+            }
+        })
+        postDataFetch()
+    }
     // =============================    Table View Methods    =========================================
 
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if(isSearchActive) {
+            return filteredMovies.count
+        }
         /* total cell count */
         return movies.count
     }
     
     /* function called for every cell*/
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        var moviesToLoad : [NSDictionary]
+        if (isSearchActive) {
+            moviesToLoad = filteredMovies
+        } else {
+            moviesToLoad = movies
+        }
         /* current index cell data */
-        let movie = movies[indexPath.row] as NSDictionary
+        let movie = moviesToLoad[indexPath.row] as NSDictionary
         /* get current cell */
         let movieCell = tableView.dequeueReusableCellWithIdentifier("MovieCell", forIndexPath: indexPath) as! MovieCell
         /* set current cell */
