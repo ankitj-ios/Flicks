@@ -18,6 +18,7 @@ class FlicksHomeViewController: UIViewController, UITableViewDelegate, UITableVi
     @IBOutlet weak var flicksHomeTableView: UITableView!
     var movies = [NSDictionary]()
     let refreshControl =  UIRefreshControl()
+    var endPointSuffix : String = "now_playing"
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -62,7 +63,7 @@ class FlicksHomeViewController: UIViewController, UITableViewDelegate, UITableVi
     func createRequest() -> NSURLRequest {
         /* calling api to fetch data */
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
-        let url = NSURL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")
+        let url = NSURL(string: "https://api.themoviedb.org/3/movie/\(endPointSuffix)?api_key=\(apiKey)")
         return NSURLRequest(URL: url!)
     }
 
