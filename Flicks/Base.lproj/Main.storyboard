@@ -18,7 +18,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <view key="tableHeaderView" contentMode="scaleToFill" id="olv-Hj-Oe3">
-                                    <rect key="frame" x="0.0" y="64" width="320" height="16"/>
+                                    <rect key="frame" x="0.0" y="64" width="320" height="63"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="errorMessageLabel" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" highlighted="YES" adjustsFontSizeToFit="NO" id="p9Q-GZ-FaQ">
@@ -28,12 +28,17 @@
                                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <searchBar contentMode="redraw" id="ekp-gf-gWB">
+                                            <rect key="frame" x="0.0" y="19" width="320" height="44"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                            <textInputTraits key="textInputTraits"/>
+                                        </searchBar>
                                     </subviews>
                                     <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 </view>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="MovieCell" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="MovieCell" rowHeight="82" id="lK7-4c-OTW" customClass="MovieCell" customModule="Flicks" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="108" width="320" height="82"/>
+                                        <rect key="frame" x="0.0" y="155" width="320" height="82"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="lK7-4c-OTW" id="Kr9-rF-4Fe">
                                             <rect key="frame" x="0.0" y="0.0" width="287" height="81.5"/>
@@ -76,6 +81,7 @@
                         <outlet property="errorMessageLabel" destination="p9Q-GZ-FaQ" id="l2g-M2-gIL"/>
                         <outlet property="flicksHomeTableView" destination="Y7k-62-n71" id="dEh-Xt-4ty"/>
                         <outlet property="networkErrorView" destination="olv-Hj-Oe3" id="gVB-lg-lHS"/>
+                        <outlet property="searchBar" destination="ekp-gf-gWB" id="eXw-pU-Jbk"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
