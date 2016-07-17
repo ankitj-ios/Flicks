@@ -88,7 +88,7 @@
             </objects>
             <point key="canvasLocation" x="520" y="282"/>
         </scene>
-        <!--Movie Details-->
+        <!--Movie-->
         <scene sceneID="hGY-43-HWM">
             <objects>
                 <viewController id="HcT-pc-0qX" customClass="FlicksDetailsViewController" customModule="Flicks" customModuleProvider="target" sceneMemberID="viewController">
@@ -117,7 +117,7 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Movie Details" id="O3f-mA-yBI"/>
+                    <navigationItem key="navigationItem" title="Movie" id="O3f-mA-yBI"/>
                     <connections>
                         <outlet property="movieDescriptionLabel" destination="5ai-uB-x0H" id="JbK-tm-o77"/>
                         <outlet property="movieImageView" destination="Nlm-Xf-GFl" id="imd-43-abj"/>

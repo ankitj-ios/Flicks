@@ -27,7 +27,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         nowPlayingViewController.endPointSuffix = "now_playing"
         nowPlayingNavigationController.tabBarItem.image = UIImage(named: "playing-1")
         nowPlayingNavigationController.tabBarItem.title = "Now Playing"
-
+        /* if we need to set any new notification on a particular tab bar item*/
+        // nowPlayingNavigationController.tabBarItem.badgeValue = "1"
         
         let topRatedNavigationController = mainStoryBoard.instantiateViewControllerWithIdentifier(moviesNavigationControllerIdentifier) as! UINavigationController
         let topRatedViewController = topRatedNavigationController.topViewController as! FlicksHomeViewController
