@@ -162,11 +162,20 @@ class FlicksHomeViewController: UIViewController, UITableViewDelegate, UITableVi
         /* set current cell */
         movieCell.movieTitle.text = movie["title"] as? String
         movieCell.movieDescription.text = movie["overview"] as? String
+        
         let baseUrl = "http://image.tmdb.org/t/p"
-        let imageSize = "/w500"
+        
+        let imageSize = "/w45"
+        let originalImageSize = "/original"
+        
         let filePath = movie["poster_path"] as! String
+        
         let fileUrlWithPath = baseUrl + imageSize + filePath
+        let originalImageSizeUrl = baseUrl + originalImageSize + filePath
+
         let imageRequest = NSURLRequest(URL: NSURL(string: fileUrlWithPath)!)
+        let originalImageRequest = NSURLRequest(URL: NSURL(string: originalImageSizeUrl)!)
+            
         movieCell.movieImageView.setImageWithURLRequest(
             imageRequest,
             placeholderImage: nil,
@@ -178,10 +187,46 @@ class FlicksHomeViewController: UIViewController, UITableViewDelegate, UITableVi
                     movieCell.movieImageView.image = image
                     UIView.animateWithDuration(0.3, animations: { () -> Void in
                         movieCell.movieImageView.alpha = 1.0
-                    })
+                        }, completion : { (success) -> Void in
+                            // The AFNetworking ImageView Category only allows one request to be sent at a time
+                            // per ImageView. This code must be in the completion block.
+                            movieCell.movieImageView.setImageWithURLRequest(
+                                originalImageRequest,
+                                placeholderImage: image,
+                                success: { (largeImageRequest, largeImageResponse, largeImage) -> Void in
+                                    movieCell.movieImageView.image = largeImage
+                                },
+                                failure: { (request, response, error) -> Void in
+                                    // do something for the failure condition of the large image request
+                                    // possibly setting the ImageView's image to a default image
+                            })
+                        }
+                    )
                 } else {
                     /* Image was cached so just update the image */
-                    movieCell.movieImageView.image = image
+                    movieCell.movieImageView.setImageWithURLRequest(
+                        originalImageRequest,
+                        placeholderImage: image,
+                        success: { (largeImageRequest, largeImageResponse, largeImage) -> Void in
+                            if largeImageResponse != nil {
+                                /* large image was cached so just update the image */
+//                                movieCell.movieImageView.image = image
+                                movieCell.movieImageView.alpha = 0.0
+                                movieCell.movieImageView.image = largeImage
+                                UIView.animateWithDuration(0.3, animations: { () -> Void in
+                                    movieCell.movieImageView.alpha = 1.0
+                                })
+                            } else {
+                                /* large image was cached so just update the image */
+                                movieCell.movieImageView.image = largeImage;
+                            }
+                            movieCell.movieImageView.image = largeImage
+                        },
+                        failure: { (request, response, error) -> Void in
+                            // do something for the failure condition of the large image request
+                            // possibly setting the ImageView's image to a default image
+                    })
+
                 }
             },
             failure: { (imageRequest, imageResponse, error) -> Void in
