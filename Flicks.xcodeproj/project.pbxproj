@@ -116,12 +116,12 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
-		7B1EB07E1D39C6900021496E /* model */ = {
+		7B1EB07E1D39C6900021496E /* view */ = {
 			isa = PBXGroup;
 			children = (
 				7B1EB07F1D39C6E70021496E /* MovieCell.swift */,
 			);
-			name = model;
+			name = view;
 			sourceTree = "<group>";
 		};
 		7B1EB0811D39C7020021496E /* controller */ = {
@@ -159,7 +159,7 @@
 			isa = PBXGroup;
 			children = (
 				7B1EB0811D39C7020021496E /* controller */,
-				7B1EB07E1D39C6900021496E /* model */,
+				7B1EB07E1D39C6900021496E /* view */,
 				7B1EB0791D39BEA80021496E /* Assets.xcassets */,
 				7B6072F61D39B7E600556743 /* AppDelegate.swift */,
 				7B6072FA1D39B7E600556743 /* Main.storyboard */,

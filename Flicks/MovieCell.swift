@@ -12,17 +12,16 @@ class MovieCell: UITableViewCell {
 
     @IBOutlet weak var movieImageView: UIImageView!
     @IBOutlet weak var movieTitle: UILabel!
-    @IBOutlet weak var movieDescription: UILabel!
     
     override func awakeFromNib() {
-        super.awakeFromNib()
         // Initialization code
+        super.awakeFromNib()
     }
 
     override func setSelected(selected: Bool, animated: Bool) {
+        /* Configure the view for the selected state */
         super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
+        self.selectionStyle = .None
     }
 
 }

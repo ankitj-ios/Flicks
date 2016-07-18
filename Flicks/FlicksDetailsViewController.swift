@@ -21,6 +21,7 @@ class FlicksDetailsViewController: UIViewController {
         super.viewDidLoad()
         movieTitleLabel.text = movie["title"] as? String
         movieDescriptionLabel.text = movie["overview"] as? String
+        movieDescriptionLabel.sizeToFit()
         let baseUrl = "http://image.tmdb.org/t/p"
         let imageSize = "/original"
         let filePath = movie["poster_path"] as! String
