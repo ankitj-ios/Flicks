@@ -11,8 +11,10 @@ import AFNetworking
 import MBProgressHUD
 import ReachabilitySwift
 
-class FlicksHomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
+class FlicksHomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
 
+    @IBOutlet weak var viewControl: UISegmentedControl!
+    @IBOutlet weak var flicksHomeCollectionView: UICollectionView!
     @IBOutlet weak var networkErrorView: UIView!
     @IBOutlet weak var errorMessageLabel: UILabel!
     @IBOutlet weak var flicksHomeTableView: UITableView!
@@ -24,15 +26,20 @@ class FlicksHomeViewController: UIViewController, UITableViewDelegate, UITableVi
     @IBOutlet weak var searchBar: UISearchBar!
     var isSearchActive : Bool = false
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         /*reachibility code starts*/
         handleNetworkReachability()
 
         /* setting delegate and datasource for tableview */
         flicksHomeTableView.delegate = self
         flicksHomeTableView.dataSource = self
+        
+        /*setting datasource for collection view */
+        flicksHomeCollectionView.dataSource = self
+        flicksHomeCollectionView.delegate = self
         
         /* for search */
         searchBar.delegate = self
@@ -41,6 +48,7 @@ class FlicksHomeViewController: UIViewController, UITableViewDelegate, UITableVi
         /* pull to refresh */
         refreshControl.addTarget(self, action: #selector(onPullToRefresh(_:)), forControlEvents: UIControlEvents.ValueChanged)
         self.flicksHomeTableView.insertSubview(refreshControl, atIndex: 0)
+        self.flicksHomeCollectionView.insertSubview(refreshControl, atIndex: 0)
         
         /* movies data fetch for home screen */
         fetchMoviesData(createRequest())
@@ -98,6 +106,8 @@ class FlicksHomeViewController: UIViewController, UITableViewDelegate, UITableVi
     func postDataFetch() -> Void {
         // reload table view
         self.flicksHomeTableView.reloadData()
+        // reload collection view
+        self.flicksHomeCollectionView.reloadData()
         // end refresh control spinner
         refreshControl.endRefreshing()
     }
@@ -234,16 +244,120 @@ class FlicksHomeViewController: UIViewController, UITableViewDelegate, UITableVi
         })
         return movieCell
     }
+    
+    // =============================    Collection View Methods    =========================================
+    
+    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if(isSearchActive) {
+            return filteredMovies.count
+        }
+        /* total cell count */
+        return movies.count
+    }
 
+    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+        var moviesToLoad : [NSDictionary]
+        if (isSearchActive) {
+            moviesToLoad = filteredMovies
+        } else {
+            moviesToLoad = movies
+        }
+        /* current index cell data */
+        let movie = moviesToLoad[indexPath.row] as NSDictionary
+        
+        let movieCollectionCell = collectionView.dequeueReusableCellWithReuseIdentifier("MovieCollectionCell", forIndexPath: indexPath) as! MovieCollectionCell
+        movieCollectionCell.movieTitle.text = movie["title"] as? String
+        
+        let baseUrl = "http://image.tmdb.org/t/p"
+        
+        let imageSize = "/w45"
+        let originalImageSize = "/original"
+        
+        let filePath = movie["poster_path"] as! String
+        
+        let fileUrlWithPath = baseUrl + imageSize + filePath
+        let originalImageSizeUrl = baseUrl + originalImageSize + filePath
+        
+        let imageRequest = NSURLRequest(URL: NSURL(string: fileUrlWithPath)!)
+        let originalImageRequest = NSURLRequest(URL: NSURL(string: originalImageSizeUrl)!)
+        
+        movieCollectionCell.movieImageView.setImageWithURLRequest(
+            imageRequest,
+            placeholderImage: nil,
+            success: { (imageRequest, imageResponse, image) -> Void in
+                /* imageResponse will be nil if the image is cached */
+                if imageResponse != nil {
+                    /*Image was NOT cached, fade in image */
+                    movieCollectionCell.movieImageView.alpha = 0.0
+                    movieCollectionCell.movieImageView.image = image
+                    UIView.animateWithDuration(0.3, animations: { () -> Void in
+                        movieCollectionCell.movieImageView.alpha = 1.0
+                        }, completion : { (success) -> Void in
+                            // The AFNetworking ImageView Category only allows one request to be sent at a time
+                            // per ImageView. This code must be in the completion block.
+                            movieCollectionCell.movieImageView.setImageWithURLRequest(
+                                originalImageRequest,
+                                placeholderImage: image,
+                                success: { (largeImageRequest, largeImageResponse, largeImage) -> Void in
+                                    movieCollectionCell.movieImageView.image = largeImage
+                                },
+                                failure: { (request, response, error) -> Void in
+                                    // do something for the failure condition of the large image request
+                                    // possibly setting the ImageView's image to a default image
+                            })
+                        }
+                    )
+                } else {
+                    /* Image was cached so just update the image */
+                    movieCollectionCell.movieImageView.setImageWithURLRequest(
+                        originalImageRequest,
+                        placeholderImage: image,
+                        success: { (largeImageRequest, largeImageResponse, largeImage) -> Void in
+                            if largeImageResponse != nil {
+                                /* large image was cached so just update the image */
+                                //                                movieCell.movieImageView.image = image
+                                movieCollectionCell.movieImageView.alpha = 0.0
+                                movieCollectionCell.movieImageView.image = largeImage
+                                UIView.animateWithDuration(0.3, animations: { () -> Void in
+                                    movieCollectionCell.movieImageView.alpha = 1.0
+                                })
+                            } else {
+                                /* large image was cached so just update the image */
+                                movieCollectionCell.movieImageView.image = largeImage;
+                            }
+                            movieCollectionCell.movieImageView.image = largeImage
+                        },
+                        failure: { (request, response, error) -> Void in
+                            // do something for the failure condition of the large image request
+                            // possibly setting the ImageView's image to a default image
+                    })
+                    
+                }
+            },
+            failure: { (imageRequest, imageResponse, error) -> Void in
+                print(error)
+        })
+        return movieCollectionCell
+    }
+    
     // =============================    Segue Methods    =========================================
 
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         /* get source and destination */
-        let sourceCell = sender as! MovieCell
+        let viewSelected = viewControl.selectedSegmentIndex
+        var index = 0
+        if viewSelected == 0 {
+            let sourceCell = sender as! MovieCell
+            let indexPath = flicksHomeTableView.indexPathForCell(sourceCell)
+            index = indexPath!.row
+        } else {
+            let sourceCell = sender as! MovieCollectionCell
+            let indexPath = flicksHomeCollectionView.indexPathForCell(sourceCell)
+            index = indexPath!.row
+        }
         let destinationViewController = segue.destinationViewController as! FlicksDetailsViewController
         /*pass data from source to destination */
-        let indexPath = flicksHomeTableView.indexPathForCell(sourceCell)
-        destinationViewController.movie = movies[indexPath!.row]
+        destinationViewController.movie = movies[index]
     }
 
     // =============================    Pull To Refresh Methods    =========================================
@@ -251,4 +365,21 @@ class FlicksHomeViewController: UIViewController, UITableViewDelegate, UITableVi
     func onPullToRefresh(refreshControl: UIRefreshControl) {
         fetchMoviesData(createRequest())
     }
+    
+    
+    // =============================    Segmented Control Methods    =========================================
+    
+    @IBAction func onViewChanged(sender: AnyObject) {
+        let viewControlIndex = viewControl.selectedSegmentIndex
+        if viewControlIndex == 0 {
+            flicksHomeCollectionView.hidden = true
+            flicksHomeTableView.hidden = false
+            flicksHomeTableView.reloadData()
+        } else {
+            flicksHomeTableView.hidden = true
+            flicksHomeCollectionView.hidden = false
+            flicksHomeCollectionView.reloadData()
+        }
+    }
+
 }

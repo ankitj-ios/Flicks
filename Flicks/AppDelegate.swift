@@ -37,6 +37,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         topRatedNavigationController.tabBarItem.title = "Top Rated"
         
         let tabBarController = UITabBarController()
+        tabBarController.tabBar.tintColor = UIColor.blackColor()
         tabBarController.viewControllers = [nowPlayingNavigationController, topRatedNavigationController]
         
         window?.rootViewController = tabBarController
