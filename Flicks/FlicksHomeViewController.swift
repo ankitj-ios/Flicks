@@ -161,7 +161,7 @@ class FlicksHomeViewController: UIViewController, UITableViewDelegate, UITableVi
         let movieCell = tableView.dequeueReusableCellWithIdentifier("MovieCell", forIndexPath: indexPath) as! MovieCell
         /* set current cell */
         movieCell.movieTitle.text = movie["title"] as? String
-        movieCell.movieDescription.text = movie["overview"] as? String
+//        movieCell.movieDescription.text = movie["overview"] as? String
         
         let baseUrl = "http://image.tmdb.org/t/p"
         
